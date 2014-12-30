@@ -102,6 +102,7 @@ class Device
                 break;
             case "AlarmClock":
             case "DeviceProperties":
+            case "MusicServices":
                 $path = null;
                 break;
             default:
