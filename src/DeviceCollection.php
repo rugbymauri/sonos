@@ -51,7 +51,7 @@ class DeviceCollection
     }
 
 
-    public function getDevices()
+    public function getDevices(): array
     {
         if (count($this->addresses) < 1) {
             if ($this->cache->contains(self::CACHE_KEY)) {
@@ -102,7 +102,7 @@ class DeviceCollection
     /**
      * Get all the devices on the current network.
      *
-     * @return string[] An array of ip addresses
+     * @return void
      */
     public function discoverDevices(string $address = "239.255.255.250")
     {
@@ -183,7 +183,7 @@ class DeviceCollection
     }
 
 
-    public function addIp(string $ip)
+    public function addIp(string $ip): self
     {
         if (!in_array($ip, $this->addresses, true)) {
             $this->addresses[] = $ip;
@@ -194,7 +194,7 @@ class DeviceCollection
     }
 
 
-    public function clear()
+    public function clear(): self
     {
         $this->addresses = [];
 
