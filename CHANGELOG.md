@@ -8,6 +8,11 @@ Changelog
 * [Support] Drop support for PHP 5.6, to make use of new PHP 7.0 features.
 * [Support] Drop support for HHVM as there is little demand to make it worthwhile.
 
+### Removed
+
+* [Tracks] The deprecated `getTitle()` method has been removed, use `getName()` instead.
+* [Radio] The deprecated `getRadioStations()` and `getRadioShows()` methods have been removed, use `getRadio()->getFavouriteShows()` and `getRadio()->getFavouriteStations()` instead.
+
 --------
 
 ## 1.9.11 - 2017-11-25
