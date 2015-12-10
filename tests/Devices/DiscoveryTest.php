@@ -1,17 +1,20 @@
 <?php
 
-namespace duncan3dc\SonosTests;
+namespace duncan3dc\SonosTests\Devices;
 
-use duncan3dc\Sonos\DeviceCollection;
+use duncan3dc\Sonos\Devices\Discovery;
+use duncan3dc\Sonos\Interfaces\Devices\FactoryInterface;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
-class DeviceCollectionTest extends TestCase
+class DiscoveryTest extends TestCase
 {
     private $devices;
 
     public function setUp()
     {
-        $this->devices = new DeviceCollection;
+        $factory = Mockery::mock(FactoryInterface::class);
+        $this->devices = new Discovery($factory);
     }
 
 
@@ -39,5 +42,18 @@ class DeviceCollectionTest extends TestCase
     {
         $this->devices->setNetworkInterface("");
         $this->assertSame("", $this->devices->getNetworkInterface());
+    }
+
+
+    public function testGetMulticastAddress()
+    {
+        $this->assertSame("239.255.255.250", $this->devices->getMulticastAddress());
+    }
+
+
+    public function testSetMulticastAddress()
+    {
+        $this->assertSame($this->devices, $this->devices->setMulticastAddress("127.0.0.1"));
+        $this->assertSame("127.0.0.1", $this->devices->getMulticastAddress());
     }
 }

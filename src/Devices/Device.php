@@ -1,17 +1,20 @@
 <?php
 
-namespace duncan3dc\Sonos;
+namespace duncan3dc\Sonos\Devices;
 
-use Doctrine\Common\Cache\Cache as CacheInterface;
 use duncan3dc\DomParser\XmlParser;
+use duncan3dc\Sonos\Exceptions\SoapException;
+use duncan3dc\Sonos\Interfaces\Devices\DeviceInterface;
+use duncan3dc\Sonos\Utils\Cache;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Make http requests to a Sonos device.
  */
-class Device
+class Device implements DeviceInterface
 {
     /**
      * @var string $ip The IP address of the device.
@@ -24,7 +27,7 @@ class Device
     protected $model;
 
     /**
-     * @var CacheInterface $cache The long-lived cache object from the Network instance.
+     * @var CacheInterface $cache The long-lived cache object from the Collection instance.
      */
     protected $cache;
 
@@ -57,6 +60,12 @@ class Device
     }
 
 
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+
     /**
      * Retrieve some xml from the device.
      *
@@ -68,13 +77,13 @@ class Device
     {
         $uri = "http://{$this->ip}:1400{$url}";
 
-        if ($this->cache->contains($uri)) {
+        if ($this->cache->has($uri)) {
             $this->logger->info("getting xml from cache: {$uri}");
-            $xml = $this->cache->fetch($uri);
+            $xml = $this->cache->get($uri);
         } else {
             $this->logger->notice("requesting xml from: {$uri}");
             $xml = (string) (new Client)->get($uri)->getBody();
-            $this->cache->save($uri, $xml, Cache::DAY);
+            $this->cache->set($uri, $xml, new \DateInterval("P1D"));
         }
 
         return new XmlParser($xml);
@@ -135,7 +144,7 @@ class Device
         } catch (\SoapFault $e) {
             $this->logger->debug("REQUEST: " . $soap->__getLastRequest());
             $this->logger->debug("RESPONSE: " . $soap->__getLastResponse());
-            throw new Exceptions\SoapException($e, $soap);
+            throw new SoapException($e, $soap);
         }
 
         return $result;
