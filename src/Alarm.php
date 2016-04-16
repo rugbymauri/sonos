@@ -3,6 +3,7 @@
 namespace duncan3dc\Sonos;
 
 use duncan3dc\DomParser\XmlElement;
+use duncan3dc\Sonos\Utils\Time;
 
 /**
  * Provides an interface for managing the alarms on the network.
@@ -148,36 +149,24 @@ class Alarm
     /**
      * Get the start time of the alarm.
      *
-     * @return string
+     * @return Time
      */
-    public function getTime(): string
+    public function getTime(): Time
     {
-        list($hours, $minutes) = explode(":", $this->attributes["StartTime"]);
-        return sprintf("%02s:%02s", $hours, $minutes);
+        return Time::parse($this->attributes["StartTime"]);
     }
 
 
     /**
      * Set the start time of the alarm.
      *
-     * @param string $time The time to set the alarm for (hh:mm)
+     * @param Time $time The time to set the alarm for
      *
      * @return $this
      */
-    public function setTime(string $time): self
+    public function setTime(Time $time): self
     {
-        $exception = new \InvalidArgumentException("Invalid time specified, time must be in the format hh:mm");
-        if (!preg_match("/^([0-9]{1,2}):([0-9]{1,2})$/", $time, $matches)) {
-            throw $exception;
-        }
-        $hours = $matches[1];
-        $minutes = $matches[2];
-
-        if ($hours > 23 || $minutes > 59) {
-            throw $exception;
-        }
-
-        $this->attributes["StartTime"] = sprintf("%02s:%02s:%02s", $hours, $minutes, 0);
+        $this->attributes["StartTime"] = $time->asString();
 
         return $this->save();
     }
@@ -186,28 +175,24 @@ class Alarm
     /**
      * Get the duration of the alarm.
      *
-     * @return int The duration in minutes
+     * @return Time
      */
-    public function getDuration(): int
+    public function getDuration(): Time
     {
-        list($hours, $minutes) = explode(":", $this->attributes["Duration"]);
-        return (int) ($hours * 60) + $minutes;
+        return Time::parse($this->attributes["Duration"]);
     }
 
 
     /**
      * Set the duration of the alarm.
      *
-     * @param int The duration in minutes
+     * @param Time $duration The duration of the alarm
      *
      * @return $this
      */
-    public function setDuration(int $duration): self
+    public function setDuration(Time $duration): self
     {
-        $hours = floor($duration / 60);
-        $minutes = $duration % 60;
-
-        $this->attributes["Duration"] = sprintf("%02s:%02s:%02s", $hours, $minutes, 0);
+        $this->attributes["Duration"] = $duration->asString();
 
         return $this->save();
     }

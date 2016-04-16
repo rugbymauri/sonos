@@ -28,12 +28,12 @@ class State extends Track
     public $queueNumber = 0;
 
     /**
-     * @var string $duration The duration of the currently active track (hh:mm:ss).
+     * @var Time $duration The duration of the currently active track.
      */
     public $duration = "";
 
     /**
-     * @var string $position The position of the currently active track (hh:mm:ss).
+     * @var Time $position The position of the currently active track.
      */
     public $position = "";
 
