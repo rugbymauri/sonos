@@ -5,6 +5,7 @@ namespace duncan3dc\Sonos;
 use duncan3dc\DomParser\XmlParser;
 use duncan3dc\Sonos\Devices\Discovery;
 use duncan3dc\Sonos\Devices\Factory;
+use duncan3dc\Sonos\Exceptions\NotFoundException;
 use duncan3dc\Sonos\Interfaces\Devices\CollectionInterface;
 use duncan3dc\Sonos\Services\Radio;
 use GuzzleHttp\Client;
@@ -148,7 +149,7 @@ class Network implements LoggerAwareInterface
      *
      * Useful for managing playlists/alarms, as these need a controller but it doesn't matter which one.
      *
-     * @return Controller|null
+     * @return Controller
      */
     public function getController(): Controller
     {
@@ -156,6 +157,8 @@ class Network implements LoggerAwareInterface
         if ($controller = reset($controllers)) {
             return $controller;
         }
+
+        throw new NotFoundException("Unable to find any controllers on the current network");
     }
 
 
@@ -164,7 +167,7 @@ class Network implements LoggerAwareInterface
      *
      * @param string $room The name of the room to look for
      *
-     * @return Speaker|null
+     * @return Speaker
      */
     public function getSpeakerByRoom(string $room): Speaker
     {
@@ -174,6 +177,8 @@ class Network implements LoggerAwareInterface
                 return $speaker;
             }
         }
+
+        throw new NotFoundException("Unable to find a speaker for the room '{$room}'");
     }
 
 
@@ -225,15 +230,11 @@ class Network implements LoggerAwareInterface
      *
      * @param string $room The name of the room to look for
      *
-     * @return Controller|null
+     * @return Controller
      */
     public function getControllerByRoom(string $room)
     {
-        if (!$speaker = $this->getSpeakerByRoom($room)) {
-            return;
-        }
-
-        $group = $speaker->getGroup();
+        $group = $this->getSpeakerByRoom($room)->getGroup();
 
         $controllers = $this->getControllers();
         foreach ($controllers as $controller) {
@@ -241,6 +242,8 @@ class Network implements LoggerAwareInterface
                 return $controller;
             }
         }
+
+        throw new NotFoundException("Unable to find the controller for the room '{$room}'");
     }
 
 
@@ -249,13 +252,13 @@ class Network implements LoggerAwareInterface
      *
      * @param string $ip The ip address of the speaker
      *
-     * @return Controller|null
+     * @return Controller
      */
     public function getControllerByIp(string $ip): Controller
     {
         $speakers = $this->getSpeakers();
         if (!array_key_exists($ip, $speakers)) {
-            throw new \InvalidArgumentException("No speaker found for the IP address '{$ip}'");
+            throw new NotFoundException("Unable to find the speaker for the IP address '{$ip}'");
         }
 
         $group = $speakers[$ip]->getGroup();
@@ -335,7 +338,7 @@ class Network implements LoggerAwareInterface
      *
      * @param string The name of the playlist
      *
-     * @return Playlist|null
+     * @return Playlist
      */
     public function getPlaylistByName(string $name): Playlist
     {
@@ -354,6 +357,8 @@ class Network implements LoggerAwareInterface
         if ($roughMatch) {
             return $roughMatch;
         }
+
+        throw new NotFoundException("No playlist called '{$name}' exists on this network");
     }
 
 
@@ -431,7 +436,7 @@ class Network implements LoggerAwareInterface
      *
      * @param int $id The ID of the alarm
      *
-     * @return Alarm|null
+     * @return Alarm
      */
     public function getAlarmById(int $id): Alarm
     {
@@ -443,6 +448,8 @@ class Network implements LoggerAwareInterface
                 return $alarm;
             }
         }
+
+        throw new NotFoundException("Unable to find an alarm with the id {$id} on this network");
     }
 
 
