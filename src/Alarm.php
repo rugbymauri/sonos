@@ -3,35 +3,26 @@
 namespace duncan3dc\Sonos;
 
 use duncan3dc\DomParser\XmlElement;
+use duncan3dc\Sonos\Interfaces\AlarmInterface;
 use duncan3dc\Sonos\Interfaces\SpeakerInterface;
 use duncan3dc\Sonos\Utils\Time;
 
 /**
  * Provides an interface for managing the alarms on the network.
  */
-class Alarm
+class Alarm implements AlarmInterface
 {
-    const ONCE      =   0;
-    const MONDAY    =   1;
-    const TUESDAY   =   self::MONDAY    * 2;
-    const WEDNESDAY =   self::TUESDAY   * 2;
-    const THURSDAY  =   self::WEDNESDAY * 2;
-    const FRIDAY    =   self::THURSDAY  * 2;
-    const SATURDAY  =   self::FRIDAY    * 2;
-    const SUNDAY    =   self::SATURDAY  * 2;
-    const DAILY     =   (self::SUNDAY   * 2) - 1;
-
     /**
      * @var array $days An mapping of php day values to our day constants.
      */
     protected $days = [
-        "0" =>  self::SUNDAY,
-        "1" =>  self::MONDAY,
-        "2" =>  self::TUESDAY,
-        "3" =>  self::WEDNESDAY,
-        "4" =>  self::THURSDAY,
-        "5" =>  self::FRIDAY,
-        "6" =>  self::SATURDAY,
+        "0" =>  AlarmInterface::SUNDAY,
+        "1" =>  AlarmInterface::MONDAY,
+        "2" =>  AlarmInterface::TUESDAY,
+        "3" =>  AlarmInterface::WEDNESDAY,
+        "4" =>  AlarmInterface::THURSDAY,
+        "5" =>  AlarmInterface::FRIDAY,
+        "6" =>  AlarmInterface::SATURDAY,
     ];
 
     /**
@@ -109,7 +100,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setRoom(string $uuid): self
+    public function setRoom(string $uuid): AlarmInterface
     {
         $this->attributes["RoomUUID"] = $uuid;
 
@@ -141,7 +132,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setSpeaker(SpeakerInterface $speaker): self
+    public function setSpeaker(SpeakerInterface $speaker): AlarmInterface
     {
         return $this->setRoom($speaker->getUuid());
     }
@@ -165,7 +156,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setTime(Time $time): self
+    public function setTime(Time $time): AlarmInterface
     {
         $this->attributes["StartTime"] = $time->asString();
 
@@ -191,7 +182,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setDuration(Time $duration): self
+    public function setDuration(Time $duration): AlarmInterface
     {
         $this->attributes["Duration"] = $duration->asString();
 
@@ -211,7 +202,7 @@ class Alarm
     {
         $data = $this->attributes["Recurrence"];
         if ($data === "ONCE") {
-            return self::ONCE;
+            return AlarmInterface::ONCE;
         }
         if ($data === "DAILY") {
             $data = "ON_0123456";
@@ -243,7 +234,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setFrequency(int $frequency): self
+    public function setFrequency(int $frequency): AlarmInterface
     {
         $recurrence = "ON_";
         foreach ($this->days as $key => $val) {
@@ -274,7 +265,7 @@ class Alarm
      * @param int $day Which day to check/set
      * @param bool $set Set this alarm to be active or not on the specified day
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     protected function onHandler(int $day, bool $set = null)
     {
@@ -298,11 +289,11 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active or not on mondays
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function onMonday(bool $set = null)
     {
-        return $this->onHandler(self::MONDAY, $set);
+        return $this->onHandler(AlarmInterface::MONDAY, $set);
     }
 
 
@@ -311,11 +302,11 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active or not on tuesdays
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function onTuesday(bool $set = null)
     {
-        return $this->onHandler(self::TUESDAY, $set);
+        return $this->onHandler(AlarmInterface::TUESDAY, $set);
     }
 
 
@@ -324,11 +315,11 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active or not on wednesdays
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function onWednesday(bool $set = null)
     {
-        return $this->onHandler(self::WEDNESDAY, $set);
+        return $this->onHandler(AlarmInterface::WEDNESDAY, $set);
     }
 
 
@@ -337,11 +328,11 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active or not on thursdays
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function onThursday(bool $set = null)
     {
-        return $this->onHandler(self::THURSDAY, $set);
+        return $this->onHandler(AlarmInterface::THURSDAY, $set);
     }
 
 
@@ -350,11 +341,11 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active or not on fridays
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function onFriday(bool $set = null)
     {
-        return $this->onHandler(self::FRIDAY, $set);
+        return $this->onHandler(AlarmInterface::FRIDAY, $set);
     }
 
 
@@ -363,11 +354,11 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active or not on saturdays
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function onSaturday(bool $set = null)
     {
-        return $this->onHandler(self::SATURDAY, $set);
+        return $this->onHandler(AlarmInterface::SATURDAY, $set);
     }
 
 
@@ -376,11 +367,11 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active or not on sundays
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function onSunday(bool $set = null)
     {
-        return $this->onHandler(self::SUNDAY, $set);
+        return $this->onHandler(AlarmInterface::SUNDAY, $set);
     }
 
 
@@ -389,14 +380,14 @@ class Alarm
      *
      * @param bool $set Set this alarm to be a one time only alarm
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function once(bool $set = null)
     {
         if ($set) {
-            return $this->setFrequency(self::ONCE);
+            return $this->setFrequency(AlarmInterface::ONCE);
         }
-        return $this->getFrequency() === self::ONCE;
+        return $this->getFrequency() === AlarmInterface::ONCE;
     }
 
 
@@ -405,14 +396,14 @@ class Alarm
      *
      * @param bool $set Set this alarm to be active every day
      *
-     * @return bool|static Returns true/false when checking, or static when setting
+     * @return bool|AlarmInterface Returns true/false when checking, or AlarmInterface when setting
      */
     public function daily(bool $set = null)
     {
         if ($set) {
-            return $this->setFrequency(self::DAILY);
+            return $this->setFrequency(AlarmInterface::DAILY);
         }
-        return $this->getFrequency() === self::DAILY;
+        return $this->getFrequency() === AlarmInterface::DAILY;
     }
 
 
@@ -439,13 +430,13 @@ class Alarm
 
         $data = $this->getFrequency();
         $days = [
-            self::MONDAY    =>  "Mon",
-            self::TUESDAY   =>  "Tues",
-            self::WEDNESDAY =>  "Wed",
-            self::THURSDAY  =>  "Thurs",
-            self::FRIDAY    =>  "Fri",
-            self::SATURDAY  =>  "Sat",
-            self::SUNDAY    =>  "Sun",
+            AlarmInterface::MONDAY    =>  "Mon",
+            AlarmInterface::TUESDAY   =>  "Tues",
+            AlarmInterface::WEDNESDAY =>  "Wed",
+            AlarmInterface::THURSDAY  =>  "Thurs",
+            AlarmInterface::FRIDAY    =>  "Fri",
+            AlarmInterface::SATURDAY  =>  "Sat",
+            AlarmInterface::SUNDAY    =>  "Sun",
         ];
         $description = "";
         foreach ($days as $key => $val) {
@@ -478,7 +469,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setVolume(int $volume): self
+    public function setVolume(int $volume): AlarmInterface
     {
         $this->attributes["Volume"] = $volume;
 
@@ -508,7 +499,7 @@ class Alarm
      *
      * @return $this
      */
-    protected function setPlayMode(string $type, bool $value): self
+    protected function setPlayMode(string $type, bool $value): AlarmInterface
     {
         $value = (bool) $value;
 
@@ -542,7 +533,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setRepeat(bool $repeat): self
+    public function setRepeat(bool $repeat): AlarmInterface
     {
         return $this->setPlayMode("repeat", $repeat);
     }
@@ -566,7 +557,7 @@ class Alarm
      *
      * @return $this
      */
-    public function setShuffle(bool $shuffle): self
+    public function setShuffle(bool $shuffle): AlarmInterface
     {
         return $this->setPlayMode("shuffle", $shuffle);
     }
@@ -588,7 +579,7 @@ class Alarm
      *
      * @return $this
      */
-    public function activate(): self
+    public function activate(): AlarmInterface
     {
         $this->attributes["Enabled"] = true;
 
@@ -601,7 +592,7 @@ class Alarm
      *
      * @return $this
      */
-    public function deactivate(): self
+    public function deactivate(): AlarmInterface
     {
         $this->attributes["Enabled"] = false;
 
@@ -626,7 +617,7 @@ class Alarm
      *
      * @return $this
      */
-    protected function save(): self
+    protected function save(): AlarmInterface
     {
         $params = [
             "StartLocalTime"        =>  $this->attributes["StartTime"],
