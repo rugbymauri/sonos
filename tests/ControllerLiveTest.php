@@ -64,11 +64,11 @@ class ControllerLiveTest extends LiveTest
 
     public function testGetStateDetails()
     {
-        $keys = ["title", "artist", "album", "trackNumber", "queueNumber", "duration", "position", "stream"];
+        $keys = ["title", "artist", "album", "number", "duration", "position", "stream"];
         $state = $this->network->getController()->getStateDetails();
         foreach ($keys as $key) {
             $this->assertObjectHasAttribute($key, $state);
-            if (in_array($key, ["trackNumber", "queueNumber"])) {
+            if ($key === "number") {
                 $this->assertInternalType("integer", $state->$key);
             } elseif ($key !== "stream") {
                 $this->assertInternalType("string", $state->$key);
