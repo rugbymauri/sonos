@@ -4,8 +4,6 @@ namespace duncan3dc\Sonos;
 
 use duncan3dc\Sonos\Interfaces\ControllerInterface;
 use duncan3dc\Sonos\Interfaces\ControllerStateInterface;
-use duncan3dc\Sonos\Interfaces\SpeakerInterface;
-use duncan3dc\Sonos\Interfaces\TrackInterface;
 use duncan3dc\Sonos\Tracks\Stream;
 use duncan3dc\Sonos\Utils\Time;
 
