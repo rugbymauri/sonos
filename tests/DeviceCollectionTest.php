@@ -3,8 +3,9 @@
 namespace duncan3dc\SonosTests;
 
 use duncan3dc\Sonos\DeviceCollection;
+use PHPUnit\Framework\TestCase;
 
-class DeviceCollectionTest extends \PHPUnit_Framework_TestCase
+class DeviceCollectionTest extends TestCase
 {
     private $devices;
 
