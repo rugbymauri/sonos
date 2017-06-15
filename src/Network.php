@@ -9,6 +9,7 @@ use duncan3dc\Sonos\Exceptions\NotFoundException;
 use duncan3dc\Sonos\Interfaces\AlarmInterface;
 use duncan3dc\Sonos\Interfaces\ControllerInterface;
 use duncan3dc\Sonos\Interfaces\Devices\CollectionInterface;
+use duncan3dc\Sonos\Interfaces\NetworkInterface;
 use duncan3dc\Sonos\Interfaces\PlaylistInterface;
 use duncan3dc\Sonos\Interfaces\SpeakerInterface;
 use duncan3dc\Sonos\Services\Radio;
@@ -19,7 +20,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Provides methods to locate speakers/controllers/playlists on the current network.
  */
-class Network implements LoggerAwareInterface
+class Network implements NetworkInterface, LoggerAwareInterface
 {
     /**
      * @var CollectionInterface $collection The collection of devices on the network.
@@ -140,7 +141,7 @@ class Network implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function clearTopology(): self
+    public function clearTopology(): NetworkInterface
     {
         $this->collection->clearTopology();
 
