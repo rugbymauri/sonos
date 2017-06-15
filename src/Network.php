@@ -11,6 +11,7 @@ use duncan3dc\Sonos\Interfaces\ControllerInterface;
 use duncan3dc\Sonos\Interfaces\Devices\CollectionInterface;
 use duncan3dc\Sonos\Interfaces\NetworkInterface;
 use duncan3dc\Sonos\Interfaces\PlaylistInterface;
+use duncan3dc\Sonos\Interfaces\Services\RadioInterface;
 use duncan3dc\Sonos\Interfaces\SpeakerInterface;
 use duncan3dc\Sonos\Services\Radio;
 use GuzzleHttp\Client;
@@ -462,9 +463,9 @@ class Network implements NetworkInterface, LoggerAwareInterface
     /**
      * Get a Radio instance for the network.
      *
-     * @return Radio
+     * @return RadioInterface
      */
-    public function getRadio(): Radio
+    public function getRadio(): RadioInterface
     {
         $controller = $this->getController();
         return new Radio($controller);
