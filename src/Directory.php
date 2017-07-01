@@ -2,8 +2,9 @@
 
 namespace duncan3dc\Sonos;
 
-use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
 
 /**
  * Represents a shared directory.
@@ -13,17 +14,17 @@ class Directory
     /**
      * @var Filesystem $filesystem The full path to the share on the local filesystem.
      */
-    protected $filesystem;
+    private $filesystem;
 
     /**
      * @var string $share The full path to the share (including the hostname).
      */
-    protected $share;
+    private $share;
 
     /**
      * @var string $directory The name of the directory (to be appended to both $filesystem and $share).
      */
-    protected $directory;
+    private $directory;
 
 
     /**
@@ -42,8 +43,8 @@ class Directory
         }
 
         # Ensure we got a Filesystem instance
-        if (!$filesystem instanceof Filesystem) {
-            throw new \InvalidArgumentException("Invalid filesystem, must be an instance of " . Filesystem::class . " or a string containing a local path");
+        if (!$filesystem instanceof FilesystemInterface) {
+            throw new \InvalidArgumentException("Invalid filesystem, must be an instance of " . FilesystemInterface::class . " or a string containing a local path");
         }
 
         $this->filesystem = $filesystem;
