@@ -590,7 +590,7 @@ class Controller implements ControllerInterface
         $export = new ControllerState($this);
 
         if ($pause) {
-            $export->state = $state;
+            $export->setState($state);
         }
 
         return $export;
@@ -608,39 +608,36 @@ class Controller implements ControllerInterface
     {
         $queue = $this->getQueue();
         $queue->clear();
-        if (count($state->tracks) > 0) {
-            $queue->addTracks($state->tracks);
+        $tracks = $state->getTracks();
+        if (count($tracks) > 0) {
+            $queue->addTracks($tracks);
         }
 
-        if (count($state->tracks) > 0) {
-            $this->selectTrack($state->track);
-
-            if ($state->position) {
-                $time = Time::parse($state->position);
-                $this->seek($time);
-            }
+        if (count($tracks) > 0) {
+            $this->selectTrack($state->getTrack());
+            $this->seek($state->getPosition());
         }
 
-        $this->setShuffle($state->shuffle);
-        $this->setRepeat($state->repeat);
-        $this->setCrossfade($state->crossfade);
+        $this->setShuffle($state->getShuffle());
+        $this->setRepeat($state->getRepeat());
+        $this->setCrossfade($state->getCrossfade());
 
-        if ($state->stream) {
-            $this->useStream($state->stream);
+        if ($stream = $state->getStream()) {
+            $this->useStream($stream);
         }
 
         $speakers = [];
         foreach ($this->getSpeakers() as $speaker) {
             $speakers[$speaker->getUuid()] = $speaker;
         }
-        foreach ($state->speakers as $uuid => $volume) {
+        foreach ($state->getSpeakers() as $uuid => $volume) {
             if (array_key_exists($uuid, $speakers)) {
                 $speakers[$uuid]->setVolume($volume);
             }
         }
 
         # If the exported state was playing then start it playing now
-        if ($state->state === self::STATE_PLAYING) {
+        if ($state->getState() === self::STATE_PLAYING) {
             $this->play();
 
         # If the exported state was stopped and we are playing then stop it now
